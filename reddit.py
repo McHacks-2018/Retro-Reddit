@@ -1,4 +1,5 @@
 import praw
+import conf
 import logging
 
 handler = logging.StreamHandler()
@@ -7,6 +8,9 @@ logger = logging.getLogger('retroreddit')
 logger.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
-reddit = praw.Reddit(client_id='my client id',
-                       client_secret='my client secret',
-                       user_agent='my user agent')
+reddit = praw.Reddit(client_id=conf.clientId,
+                     client_secret=conf.clientSecret,
+                     user_agent=conf.userAgent)
+print(reddit.read_only)
+for submission in reddit.subreddit('learnpython').hot(limit=10):
+    print(submission.title)
