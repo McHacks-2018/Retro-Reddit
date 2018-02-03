@@ -7,3 +7,4 @@ requests==2.18.4
 update-checker==0.16
 urllib3==1.22
 virtualenv==15.1.0
+six
