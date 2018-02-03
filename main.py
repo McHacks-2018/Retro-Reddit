@@ -3,12 +3,17 @@ from cursebox.constants import *
 
 import reddit
 
+#TODO display ssl status
+
 with Cursebox() as cb:
     width, height = cb.width, cb.height
 
     def login_screen():
         cb.clear();
         # todo define login form
+    
+    def show_subreddits(subreddits, selected):
+
 
     def show_posts(posts, selected):
         y = 0
@@ -19,23 +24,42 @@ with Cursebox() as cb:
             cb.put(x=x, y=y, text=title, fg=colors.white, bg=bg)
             y += 1
 
-    selected = 2
+    def show_content(content, scroll_index):
+
+
+    def show_panes():
+
+
+    #TODO implement nested selectlist instead
+    scroll_horiz = 0
+    scroll_vert = 0
+
     cb.clear()
-    cb.put(x=(width/2),y=(height/2),text="...",fg=colors.white,bg=colors.black)
+    cb.put(x=(width/2-5),y=(height/2),text="loading...",fg=colors.white,bg=colors.black)
     cb.refresh()
+
+    subreddits = 
     posts = reddit.getPosts("all",height)
 
     while True:
         cb.clear()
-        show_posts(posts,selected)
+        show_panes()
         cb.refresh()
         # Wait for any keypress
         event = cb.poll_event()
         if event == EVENT_ESC:
             exit()
         elif event == EVENT_UP:
-            if selected > 0:
-                selected -= 1
+            if scroll_vert > 0:
+                scroll_vert -= 1
         elif event == EVENT_DOWN:
-            if selected < height:
-                selected += 1
+            if scroll_vert < height:
+                scroll_vert += 1
+        elif event == EVENT_RIGHT:
+            if scroll_horiz < 3:
+                scroll_horiz += 1
+        elif event == EVENT_LEFT:
+            if scroll_horiz > 0:
+                scroll_horiz -= 1
+        elif event == 'r':
+            refresh_content(scroll_horiz)
