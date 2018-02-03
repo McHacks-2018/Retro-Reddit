@@ -1,5 +1,5 @@
 import bindings as b
-
+from datetime import datetime
 
 class Comment(b.Readable):
     user = None
@@ -24,16 +24,20 @@ class User(b.Readable):
 
 
 class Post(b.Readable):
-    subreddit = ""
-    type = ""
-    title = ""
-    content = ""
-    op = ""
-    time = -1
 
-    def __init__(self, prawSubmission):
-        self.title = prawSubmission.title
-        # self.description = prawSubmission.description
+    def __init__(self, praw):
+        self.praw = praw
+        self.title = praw.title
+        self.permalink = praw.permalink
+        self.score = praw.score
+        if praw.selftext is not '':
+            self.content = praw.selftext
+            self.type = "self"
+        elif praw.thumbnail is not '':
+            self.thumbnail = praw.thumbnail
+            self.type = "img"
+        self.num_comments = praw.num_comments
+        self.time = praw.created_utc
 
     def __str__(self):
-        return "{}: {}\n{}".format(self.title, self.content, self.time)
+        return "{} - {}:\n\n{}\n\n- {}".format(self.title, self.type, self.content[:50] + "...", datetime.fromtimestamp(self.time))

@@ -2,7 +2,7 @@ import praw
 import conf
 import logging
 import models
-import pprint
+from pprint import  pprint
 
 handler = logging.StreamHandler()
 handler.setLevel(logging.DEBUG)
@@ -24,23 +24,11 @@ def login(username, password):
                      username=username,
                      password=password)
 
-
 def getPosts(subreddit, limit=20):
     submissions = rr.subreddit(subreddit).hot(limit=limit)
-    for s in submissions
-        data = map((lambda x: models.Post(x)), submissions)
+    data = map((lambda x: models.Post(x)), submissions)
     return list(data)
 
 
 submission = getPosts("askreddit", 10)[0]
-# for submission in submissions:
-#     post = models.Post(submission)
-#     pprint.pprint(vars(submission.author))
-#     print(submission.title)
-#     print(submission)
-#     print(vars(submission))
-
-# print(submissions)
-
-# post = models.Post(submission)
-# print(post)
+print(submission)
