@@ -1,5 +1,5 @@
 import bindings as b
-from datetime import datetime
+
 
 class Comment(b.Readable):
     user = None
@@ -9,19 +9,11 @@ class Comment(b.Readable):
     def __init__(self, prawComment):
         self.content = prawComment.body
 
-    def __str__(self):
-        return "{}: {}\n\t{}".format(self.user, self.content, self.time)
-
-
 class User(b.Readable):
     name = ""
 
     def __init__(self, prawUser):
         name = prawUser.name
-
-    def __str__(self):
-        return self.name
-
 
 class Post(b.Readable):
 
@@ -38,6 +30,3 @@ class Post(b.Readable):
             self.type = "img"
         self.num_comments = praw.num_comments
         self.time = praw.created_utc
-
-    def __str__(self):
-        return "{} - {}:\n\n{}\n\n- {}".format(self.title, self.type, self.content[:50] + "...", datetime.fromtimestamp(self.time))

@@ -1,8 +1,9 @@
-import praw
-import conf
 import logging
+
+import praw
+
+import conf
 import models
-from pprint import  pprint
 
 handler = logging.StreamHandler()
 handler.setLevel(logging.DEBUG)
@@ -23,6 +24,7 @@ def login(username, password):
                      user_agent=conf.userAgent,
                      username=username,
                      password=password)
+
 
 def getPosts(subreddit, limit=20):
     submissions = rr.subreddit(subreddit).hot(limit=limit)
