@@ -14,15 +14,13 @@ rr = praw.Reddit(client_id=conf.clientId,
 
 
 def login(username, password):
+    global rr
     logger.debug("Logging in as {}".format(username))
     rr = praw.Reddit(client_id=conf.clientId,
                      client_secret=conf.clientSecret,
                      user_agent=conf.userAgent,
                      username=username,
                      password=password)
-
-for submission in reddit.subreddit('learnpython').hot(limit=10):
-    print(submission.title)
 
 
 def getPosts(subreddit, limit=20):
