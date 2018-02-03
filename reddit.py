@@ -25,6 +25,21 @@ def login(username, password):
                      username=username,
                      password=password)
 
+def getComment():
+    submissions = rr.subreddit("askreddit").hot(limit = 1)
+    s = list(submissions)[0]
+    s.comment_sort = 'new'
+    s.comments.replace_more(limit=None)
+    comment_queue = s.comments[:]  # Seed with top-level
+
+    while comment_queue:
+        comment = comment_queue.pop(0)
+        print(comment.body)
+        comment_queue.extend(comment.replies)
+    #pprint.pprint(vars(s.comments))
+
+
+getComment()
 
 def getPosts(subreddit, limit=20):
     submissions = rr.subreddit(subreddit).hot(limit=limit)
