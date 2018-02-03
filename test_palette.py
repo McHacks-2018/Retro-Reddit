@@ -1,7 +1,7 @@
 from six import iteritems
 
-from .cursebox import palette
-from .cursebox.utils import hex_to_rgb
+from cursebox import palette
+from cursebox.utils import hex_to_rgb
 
 
 def test_distance():
