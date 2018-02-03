@@ -1,6 +1,13 @@
-class Readable(object):
-    def __str__(self) -> str:
-        return "Not Implemented"
+from pprint import pprint
 
-    def __repr__(self) -> str:
-        return self.__str__()
+
+class Readable(object):
+
+    def pprint(self) -> str:
+        return pprint(vars(self))
+
+    # def __str__(self) -> str:
+    #     return self.pprint()
+    #
+    # def __repr__(self) -> str:
+    #     return self.pprint()
