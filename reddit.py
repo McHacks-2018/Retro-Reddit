@@ -1,4 +1,5 @@
 import logging
+from pprint import pprint
 
 import praw
 
@@ -25,27 +26,33 @@ def login(username, password):
                      username=username,
                      password=password)
 
-def getComment():
-    submissions = rr.subreddit("askreddit").hot(limit = 1)
-    s = list(submissions)[0]
-    s.comment_sort = 'new'
-    s.comments.replace_more(limit=None)
-    comment_queue = s.comments[:]  # Seed with top-level
-
-    while comment_queue:
-        comment = comment_queue.pop(0)
-        print(comment.body)
-        comment_queue.extend(comment.replies)
-    #pprint.pprint(vars(s.comments))
-
-
-getComment()
-
 def getPosts(subreddit, limit=20):
     submissions = rr.subreddit(subreddit).hot(limit=limit)
     data = map((lambda x: models.Post(x)), submissions)
     return list(data)
 
+def getUser(user):
+    return models.User(rr.redditor(user))
 
 submission = getPosts("askreddit", 10)[0]
-print(submission)
+origSubmission = list(rr.subreddit("askreddit").hot(limit=2))[1]
+
+def testSubmission():
+    submission.pprint()
+# print(str(submission.getComments()))
+
+testSubmission()
+
+submission.op.pprint()
+
+comments = submission.getComments()
+
+
+def testComments():
+    for c in comments:
+        c.pprint()
+    print(len(comments))
+    children = comments[0].children()
+    print("\n\n\n\n")
+    for c in children:
+        c.pprint()
