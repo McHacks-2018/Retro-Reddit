@@ -1,32 +1,39 @@
-import bindings
-import praw.models as m
+import bindings as b
 
-class Posts:
+
+class Comment(b.Readable):
+    user = None
+    time = -1
+    content = ""
+
+    def __init__(self, prawComment):
+        self.content = prawComment.body
+
+    def __str__(self):
+        return "{}: {}\n\t{}".format(self.user, self.content, self.time)
+
+
+class User(b.Readable):
+    name = ""
+
+    def __init__(self, prawUser):
+        name = prawUser.name
+
+    def __str__(self):
+        return self.name
+
+
+class Post(b.Readable):
     subreddit = ""
     type = ""
     title = ""
     content = ""
     op = ""
-    timestamp = -1
+    time = -1
 
-    def toString(self):
-        pass
+    def __init__(self, prawSubmission):
+        self.title = prawSubmission.title
+        # self.description = prawSubmission.description
 
-class Comments(m.Comment, bindings.Readable):
-    user = ""
-    text = ""
-    timestamp = -1
-
-    def toString(self):
-        super().toString()
-
-class Users(m.Comment, bindings.Readable):
-
-    def toString(self):
-        super().toString()
-
-
-user = Users()
-#print(str(isinstance(user, bindings.Readable)))
-post = Posts()
-#print(str(isinstance(post,bindings.Readable)))
+    def __str__(self):
+        return "{}: {}\n{}".format(self.title, self.content, self.time)
