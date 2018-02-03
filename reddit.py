@@ -12,5 +12,5 @@ reddit = praw.Reddit(client_id=conf.clientId,
                      client_secret=conf.clientSecret,
                      user_agent=conf.userAgent)
 print(reddit.read_only)
-for submission in reddit.subreddit('learnpython').hot(limit=10):
+for submission in reddit.subreddit('askreddit').hot(limit=10):
     print(submission.title)
