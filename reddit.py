@@ -1,4 +1,5 @@
 import praw
+import conf
 import logging
 
 handler = logging.StreamHandler()
@@ -7,6 +8,20 @@ logger = logging.getLogger('retroreddit')
 logger.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
-reddit = praw.Reddit(client_id='my client id',
-                       client_secret='my client secret',
-                       user_agent='my user agent')
+rr = praw.Reddit(client_id=conf.clientId,
+                 client_secret=conf.clientSecret,
+                 user_agent=conf.userAgent)
+
+
+def login(username, password):
+    global rr
+    logger.debug("Logging in as {}".format(username))
+    rr = praw.Reddit(client_id=conf.clientId,
+                     client_secret=conf.clientSecret,
+                     user_agent=conf.userAgent,
+                     username=username,
+                     password=password)
+
+
+def getPosts(subreddit, limit=20):
+    return rr.subreddit(subreddit).hot(limit=limit)
