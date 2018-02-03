@@ -28,7 +28,7 @@ with Cursebox() as cb:
 
 
     def show_panes():
-
+        show_subreddits(subreddits, )
 
     #TODO implement nested selectlist instead
     scroll_horiz = 0
