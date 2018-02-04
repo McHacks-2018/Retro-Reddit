@@ -12,7 +12,7 @@ args = parser.parse_args()
 # user information/praw login
 user = input('Enter your username: ')
 password = getpass.getpass(prompt='Password: ', stream=None)
-reddit.login(user, password)
+reddit.reddit_login(user, password)
 
 posts = reddit.getPosts(args.r[0])
 for submission in posts:

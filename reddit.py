@@ -4,6 +4,7 @@ import praw
 
 import conf
 import models
+import reddit_login
 
 handler = logging.StreamHandler()
 handler.setLevel(logging.DEBUG)
@@ -12,34 +13,53 @@ logger.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
 
-def createReddit(username=None, password=None):
-    if username is not None and password is not None:
-        logger.debug("Logging in as {}".format(username))
+def createReddit(refresh_token=None):
+    if isinstance(refresh_token, str) and refresh_token:
         reddit = praw.Reddit(client_id=conf.clientId,
                              client_secret=conf.clientSecret,
                              user_agent=conf.userAgent,
-                             redirect_uri="https://github.com/McHacks-2018/Retro-Reddit")
-        print(reddit.auth.url(['identity'], 'init', implicit=True))
-        # if reddit.read_only:
-        #     logger.error("Failed to log in with user")
-        #     return None
-        # for c in reddit.inbox.mentions():
-        #     print(c)
-        # print(reddit.inbox.mentions())
-        reddit.user.me()
+                             refresh_token=refresh_token)
         return reddit
     reddit = praw.Reddit(client_id=conf.clientId,
                          client_secret=conf.clientSecret,
+                         redirect_uri='http://localhost:8080',
                          user_agent=conf.userAgent)
     return reddit
 
 
-rr = createReddit()
+def initReddit():
+    with open("retro_reddit.txt", "w+") as token_file:
+        token = token_file.readline()
+        if token:
+            return createReddit(token)
+    return createReddit()
 
 
-def login(username, password):
+rr = initReddit()
+
+def save_token(refresh_token):
+    with open("retro_reddit.txt", "w") as token_file:
+        token_file.write(refresh_token)
+        token_file.flush()
+
+def login(refresh_token=None):
     global rr
-    rr = createReddit(username, password)
+    if isinstance(refresh_token, str) and refresh_token:
+        logger.debug("Found token {}".format(refresh_token))
+        save_token(refresh_token)
+        rr = createReddit(refresh_token)
+    else:
+        logger.debug("Launching login request")
+        token = reddit_login.request_login(rr)
+        if token is not None:
+            save_token(token)
+            rr = createReddit(token)
+
+
+try:
+    rr.user.me()
+except:
+    login(None)
 
 
 def getPosts(subreddit, limit=20):
