@@ -14,7 +14,9 @@ with Cursebox() as cb:
         cb.clear()
         cb.put(width / 2 - 5, height / 2, msg, colors.white, colors.black)
         cb.refresh()
-    ms.playMusic()
+    
+    ms.loadMPD()
+    ms.setMusic()
     display_message("loading.")
 
     pane = [0, -1, -1]
