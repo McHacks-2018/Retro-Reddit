@@ -14,7 +14,8 @@ with Cursebox() as cb:
 
     display_message("loading.")
 
-    scroll_vert = [0, 0, 0]
+    pane = [0, -1, -1]
+    pane_snapshot = [0, -1, -1]
     curr_pane = 0
 
     subreddits = reddit.get_subscribed_subreddits()
@@ -53,7 +54,7 @@ with Cursebox() as cb:
     def show_subreddits():
         y = 0
         for subreddit in subreddits:
-            bg = colors.black if y != scroll_vert[0] else colors.blue
+            bg = colors.blue if curr_pane == 0 and y == pane[0] else colors.black
             title = fit_section(subreddit.subreddit_name)
             cb.put(0, y, title, fg=colors.white, bg=bg)
             y += 1
@@ -64,7 +65,7 @@ with Cursebox() as cb:
     def show_posts():
         y = 0
         for post in posts:
-            bg = colors.black if y != scroll_vert[1] else colors.blue
+            bg = colors.blue if curr_pane == 1 and y == pane[1] else colors.black
             title = fit_section(post.title)
             cb.put(width / 3, y, title, colors.white, bg)
             y += 1
@@ -76,35 +77,40 @@ with Cursebox() as cb:
 
     def show_panes():
         show_subreddits()
-        if curr_pane == 0:  # and index_changed:
+        if pane_snapshot[0] != pane[0]:
             global posts
-            posts = subreddits[scroll_vert[0]].get_posts(height)  # TODO add range parameters for paging
-        elif curr_pane == 1:  # and index_changed:
-            global content
-            content = posts[scroll_vert[1]].getComments()
+            posts = subreddits[pane[0]].get_posts(height)
         show_posts()
+        if pane_snapshot[1] != pane[1]:
+            global content
+            content = "index " + str(pane[1])
         show_content()
 
     while True:
         cb.clear()
         show_panes()
-        # show_subreddits()
-        # show_comments()
         cb.refresh()
+
+        pane_snapshot[0] = pane[0]
+        pane_snapshot[1] = pane[1]
+        pane_snapshot[2] = pane[2]
 
         event = cb.poll_event()
         if event == EVENT_ESC:
-            exit()
-        elif event == EVENT_UP and scroll_vert[curr_pane] > 0:
-            scroll_vert[curr_pane] -= 1
-            # index_changed = True
-        elif event == EVENT_DOWN and scroll_vert[curr_pane] < height:
-            scroll_vert[curr_pane] += 1
-            # index_changed = True
-        elif event == EVENT_RIGHT and curr_pane < 3:
+            exit(0)
+        elif event == EVENT_UP and pane[curr_pane] > 0:
+            pane[curr_pane] -= 1
+        elif event == EVENT_DOWN and pane[curr_pane] < height - 1:
+            pane[curr_pane] += 1
+        elif event == EVENT_RIGHT and curr_pane < 3 - 1:
             curr_pane += 1
+            if pane[curr_pane] < 0:
+                pane[curr_pane] = 0
         elif event == EVENT_LEFT and curr_pane > 0:
+            pane[curr_pane] = -1
             curr_pane -= 1
         elif event == 'r':
             pass
+        elif event == 'q':
+            exit(0)
             # refresh_content()

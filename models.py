@@ -1,6 +1,7 @@
 import bindings as b
 import reddit
 
+
 class Comment(b.Readable):
     user = None
     time = -1
@@ -91,10 +92,12 @@ class Post(b.Readable):
         self.num_comments = praw.num_comments
         self.time = praw.created_utc
         self._comments = None
+        self._comment_stream = None
         self.op = User(praw.author)
 
-    def getComments(self, sort="best"):
+    def get_comments(self, sort="best", count=20):
         if self._comments is None:
             self.praw.comment_sort = sort
+            self.praw.comments.replace_more(limit=None)
             self._comments = list(map(lambda x: Comment(x), self.praw.comments))
         return self._comments
