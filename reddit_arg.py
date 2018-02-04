@@ -16,6 +16,6 @@ user = input('Enter your username: ')
 password = getpass.getpass(prompt='Password: ', stream=None)
 reddit.reddit_login(user, password)
 
-posts = reddit.getPosts(args.r[0])
+posts = reddit.get_posts(args.r[0])
 for submission in posts:
     print(submission.title)

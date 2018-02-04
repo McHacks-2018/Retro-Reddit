@@ -1,5 +1,5 @@
 import bindings as b
-
+import reddit
 
 class Comment(b.Readable):
     user = None
@@ -23,13 +23,13 @@ class Comment(b.Readable):
         self.commenter = User(praw.author)
 
     def children(self):
-        if self._children is not None:
-            return self._children
-        self._children = map(lambda x: Comment(x), self.praw.replies)
+        if self._children is None:
+            self._children = list(map(lambda x: Comment(x), self.praw.replies))
         return self._children
 
     def parent(self):
         pass
+
 
 class User(b.Readable):
 
@@ -37,6 +37,7 @@ class User(b.Readable):
         self.name = praw.name
         self.link_karma = praw.link_karma
         self.comment_karma = praw.comment_karma
+
 
 class Me(b.Readable):
 
@@ -46,6 +47,7 @@ class Me(b.Readable):
         self.comment_karma = praw.comment_karma
         self.has_mail = praw.has_mail
         self.id = praw.id
+
 
 class Subreddit(b.Readable):
 
@@ -63,6 +65,12 @@ class Subreddit(b.Readable):
         self.title = praw.title
         self.url = praw.url
         self.user_is_subscriber = praw.user_is_subscriber
+        self._posts = None
+
+    def get_posts(self, limit=20):
+        if self._posts is None:
+            self._posts = reddit.get_posts(self.subreddit_name, limit)
+        return self._posts
 
 
 class Post(b.Readable):
@@ -85,9 +93,8 @@ class Post(b.Readable):
         self._comments = None
         self.op = User(praw.author)
 
-    def getComments(self, sort = "best"):
-        if self._comments is not None:
-            return self._comments
-        self.praw.comment_sort = sort
-        self._comments = list(map(lambda x: Comment(x), self.praw.comments))
+    def getComments(self, sort="best"):
+        if self._comments is None:
+            self.praw.comment_sort = sort
+            self._comments = list(map(lambda x: Comment(x), self.praw.comments))
         return self._comments

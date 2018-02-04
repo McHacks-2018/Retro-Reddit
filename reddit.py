@@ -11,7 +11,7 @@ logger.addHandler(handler)
 
 # print(rr.user.me())
 
-rr = reddit_creator.initReddit()
+rr = reddit_creator.init_reddit()
 
 try:
     rr.user.me()
@@ -44,20 +44,20 @@ def clear_vote(id):
     submission.clear_vote()
 
 
-def getPosts(subreddit, limit=20):
+def get_posts(subreddit, limit=20):
     submissions = rr.subreddit(subreddit).hot(limit=limit)
     data = map((lambda x: models.Post(x)), submissions)
     return list(data)
 
 
-def getUser(user):
+def get_user(user):
     return models.User(rr.redditor(user))
 
 
-def getSubscribeSubreddits():
+def get_subscribed_subreddits():
     return list(map(lambda x: models.Subreddit(x), rr.user.subreddits()))
 
 
 # todo
-def searchSubreddits(query):
+def search_subreddits(query):
     return models.Subreddit(rr.subreddit(query))

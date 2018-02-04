@@ -84,7 +84,7 @@ def request_login(reddit):
     return refresh_token
 
 
-def createReddit(refresh_token=None):
+def create_reddit(refresh_token=None):
     if isinstance(refresh_token, str) and refresh_token:
         reddit = praw.Reddit(client_id=conf.clientId,
                              client_secret=conf.clientSecret,
@@ -99,13 +99,13 @@ def createReddit(refresh_token=None):
     return reddit
 
 
-def initReddit():
+def init_reddit():
     with open("retro_reddit.txt", "r+") as token_file:
         token = token_file.readline()
         logger.debug("Init with token {}".format(token))
         if token:
-            return createReddit(token)
-    return createReddit()
+            return create_reddit(token)
+    return create_reddit()
 
 
 def save_token(refresh_token):
@@ -118,11 +118,11 @@ def login(reddit, refresh_token=None):
     if isinstance(refresh_token, str) and refresh_token:
         logger.debug("Found token {}".format(refresh_token))
         save_token(refresh_token)
-        return createReddit(refresh_token)
+        return create_reddit(refresh_token)
     logger.debug("Launching login request")
     token = request_login(reddit)
     if token is not None:
         save_token(token)
-        return createReddit(token)
+        return create_reddit(token)
     return reddit
 
