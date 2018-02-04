@@ -3,7 +3,7 @@ import praw
 import prawcore
 import conf
 import models
-from pprint import  pprint
+import reddit_login
 
 handler = logging.StreamHandler()
 handler.setLevel(logging.DEBUG)
@@ -38,13 +38,56 @@ def upvote(id):
     submission = rr.submission(id=id)
     submission.models.upvote()
 
+def createReddit(refresh_token=None):
+    if isinstance(refresh_token, str) and refresh_token:
+        reddit = praw.Reddit(client_id=conf.clientId,
+                             client_secret=conf.clientSecret,
+                             user_agent=conf.userAgent,
+                             refresh_token=refresh_token)
+        return reddit
+    reddit = praw.Reddit(client_id=conf.clientId,
+                         client_secret=conf.clientSecret,
+                         redirect_uri='http://localhost:8080',
+                         user_agent=conf.userAgent)
+    return reddit
+
+
+def initReddit():
+    with open("retro_reddit.txt", "w+") as token_file:
+        token = token_file.readline()
+        if token:
+            return createReddit(token)
+    return createReddit()
+
 def downvote(id):
     submission = rr.submission(id=id)
     submission.models.downvote()
 
-def login(username, password):
+rr = initReddit()
+
+def save_token(refresh_token):
+    with open("retro_reddit.txt", "w") as token_file:
+        token_file.write(refresh_token)
+        token_file.flush()
+
+def login(refresh_token=None):
     global rr
-    rr = createReddit(username, password)
+    if isinstance(refresh_token, str) and refresh_token:
+        logger.debug("Found token {}".format(refresh_token))
+        save_token(refresh_token)
+        rr = createReddit(refresh_token)
+    else:
+        logger.debug("Launching login request")
+        token = reddit_login.request_login(rr)
+        if token is not None:
+            save_token(token)
+            rr = createReddit(token)
+
+
+try:
+    rr.user.me()
+except:
+    login(None)
 
 
 def getPosts(subreddit, limit=20):
