@@ -61,7 +61,7 @@ class Subreddit(b.Readable):
         self.lang = praw.lang
         self.submission_type = praw.submission_type
         self.subscribers = praw.subscribers
-        self.title = praw.header_title
+        self.title = praw.title
         self.url = praw.url
         self.user_is_subscriber = praw.user_is_subscriber
 

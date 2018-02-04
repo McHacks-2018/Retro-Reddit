@@ -71,8 +71,8 @@ for subreddits in getSubscribeSubreddits():
     subreddits.pprint()
 
 
-def searchSubreddits(query):
-    return models.Subreddit(rr.subreddit(query))
+#def searchSubreddits(query):
+#    return models.Subreddit(rr.subreddit(query))
 
 
 
