@@ -17,8 +17,8 @@ with Cursebox() as cb:
         x = 0
         for subreddit in subreddits:
             bg = colors.black if y!= selected else colors.blue
-            title = post.title[:0] + '...' if len(post.title) > width/3 else post.title.ljust(int(width/3))
-            cb.put(0, y, title, fg = colors.white, bg)
+            title = subreddit.title[:0] + '...' if len(subreddit.title) > width/3 else subreddit.title.ljust(int(width/3))
+            cb.put(0, y, title, colors.white, bg)
             y+= 1
 
 
@@ -50,7 +50,7 @@ with Cursebox() as cb:
     cb.put(x=(width/2-5),y=(height/2),text="loading...",fg=colors.white,bg=colors.black)
     cb.refresh()
 
-    subreddits = 
+    # subreddits = 
     posts = reddit.getPosts("all",height)
 
     while True:
