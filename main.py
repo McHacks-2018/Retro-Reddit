@@ -38,7 +38,9 @@ with Cursebox() as cb:
 
 
     def show_panes():
-        show_subreddits(subreddits, )
+        show_subreddits(subreddits, selected)
+        posts = reddit.getPosts(subreddits[i].name,height)
+        show_posts(posts, selected)
 
     #TODO implement nested selectlist instead
     scroll_horiz = 0
