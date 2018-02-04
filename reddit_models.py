@@ -1,6 +1,8 @@
+from praw.models import Comment as PrawComment
+
 import bindings as b
-import reddit
 import model
+import reddit
 
 
 class Comment(b.Readable):
@@ -26,7 +28,8 @@ class Comment(b.Readable):
 
     def children(self):
         if self._children is None:
-            self._children = list(map(lambda x: Comment(x), self.praw.replies))
+            self._children = list(
+                map(lambda x: Comment(x), filter(lambda x: isinstance(x, PrawComment), self.praw.replies)))
         return self._children
 
     def parent(self):
@@ -100,7 +103,10 @@ class Post(b.Readable, model.Section):
         self.time = praw.created_utc
         self._comments = None
         self._comment_stream = None
-        self.op = User(praw.author)
+        try:
+            self.op = User(praw.author)
+        except AttributeError:
+            self.op = None
 
     def get_comments(self, sort="best", count=20):
         if self._comments is None:
@@ -109,10 +115,10 @@ class Post(b.Readable, model.Section):
             self._comments = list(map(lambda x: Comment(x), self.praw.comments))
         return self._comments
 
+
     def get_display_text(self):
         return self.title
 
+
     def get_children(self):
         return self.get_comments()
-
-
