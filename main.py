@@ -41,7 +41,7 @@ with Cursebox() as cb:
         """
         size = int(size)
         if size <= 1 or len(text) <= size:
-            return text
+            return text.ljust(size)
         return text[:size - 1] + "\u2026"
 
 
@@ -86,6 +86,9 @@ with Cursebox() as cb:
             bg = colors.blue if curr_pane == index and y == pane[index] else colors.black
             text = fit(item.get_display_text(), pane_width)
             cb.put(offset, y, text, fg=colors.white, bg=bg)
+            y += 1
+        while y < height:
+            cb.put(offset, y, fit("", pane_width), fg=colors.white, bg=colors.black)
             y += 1
 
 
