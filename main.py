@@ -10,7 +10,7 @@ with Cursebox() as cb:
 
     def display_message(msg):
         cb.clear()
-        cb.put(width / 2 - 5, height / 2, msg, colors.white, colors.black)
+        cb.put(width / 2 - len(msg) / 2, height / 2, msg, colors.white, colors.black)
         cb.refresh()
 
 
@@ -53,6 +53,14 @@ with Cursebox() as cb:
         Crop the text to match a third of the screen
         """
         return fit(text, width / 3)
+    
+    def split_wrap_section(text):
+        """
+        Break text into a list of lines to fit a section
+        so the text is all displayed without ellipsis
+        """
+        # TODO loop over words until section width exceeded, append words so far to returned list
+        return []
 
 
     def get_offset(index):
