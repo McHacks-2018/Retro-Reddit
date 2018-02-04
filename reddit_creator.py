@@ -9,10 +9,20 @@ This tool can be used to conveniently create refresh tokens for later use with
 your web application OAuth2 credentials.
 
 """
+import logging
 import random
 import socket
 import sys
+import conf
 import webbrowser
+import praw
+
+handler = logging.StreamHandler()
+handler.setLevel(logging.DEBUG)
+logger = logging.getLogger('retroreddit-creator')
+logger.setLevel(logging.DEBUG)
+logger.addHandler(handler)
+
 
 def receive_connection():
     """Wait for and then return a connected socket..
@@ -72,3 +82,47 @@ def request_login(reddit):
     refresh_token = reddit.auth.authorize(params['code'])
     send_message(client, 'Refresh token: {}; please close this window'.format(refresh_token))
     return refresh_token
+
+
+def createReddit(refresh_token=None):
+    if isinstance(refresh_token, str) and refresh_token:
+        reddit = praw.Reddit(client_id=conf.clientId,
+                             client_secret=conf.clientSecret,
+                             user_agent=conf.userAgent,
+                             refresh_token=refresh_token)
+        reddit.read_only = False
+        return reddit
+    reddit = praw.Reddit(client_id=conf.clientId,
+                         client_secret=conf.clientSecret,
+                         redirect_uri='http://localhost:8080',
+                         user_agent=conf.userAgent)
+    return reddit
+
+
+def initReddit():
+    with open("retro_reddit.txt", "r+") as token_file:
+        token = token_file.readline()
+        logger.debug("Init with token {}".format(token))
+        if token:
+            return createReddit(token)
+    return createReddit()
+
+
+def save_token(refresh_token):
+    with open("retro_reddit.txt", "w+") as token_file:
+        token_file.write(refresh_token)
+        token_file.flush()
+
+
+def login(reddit, refresh_token=None):
+    if isinstance(refresh_token, str) and refresh_token:
+        logger.debug("Found token {}".format(refresh_token))
+        save_token(refresh_token)
+        return createReddit(refresh_token)
+    logger.debug("Launching login request")
+    token = request_login(reddit)
+    if token is not None:
+        save_token(token)
+        return createReddit(token)
+    return reddit
+
