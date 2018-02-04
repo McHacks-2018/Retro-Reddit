@@ -20,7 +20,6 @@ with Cursebox() as cb:
             cb.put(0, y, title, fg = colors.white, bg)
             y += 1
 
-
     # def get_subreddits():
 
 
