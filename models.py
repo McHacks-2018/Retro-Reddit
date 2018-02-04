@@ -38,11 +38,33 @@ class User(b.Readable):
         self.link_karma = praw.link_karma
         self.comment_karma = praw.comment_karma
 
+class Me(b.Readable):
+
+    def __init__(self, praw):
+        self.name = praw.name
+        self.link_karma = praw.link_karma
+        self.comment_karma = praw.comment_karma
+        self.has_mail = praw.has_mail
+        self.id = praw.id
+
 class Subreddit(b.Readable):
 
     def __init__(self, praw):
         self.name = praw.name
         self.display_name = praw.display_name
+        self.banner_size = praw.banner_size
+        self.banner_img = praw.banner_img
+        self.description = praw.public_description
+        self.header_title = praw.header_title
+        self.id = praw.id
+        self.key_color = praw.key_color
+        self.lang = praw.lang
+        self.submission_type = praw.submission_type
+        self.subscribers = praw.subscribers
+        self.title = praw.header_title
+        self.url = praw.url
+        self.user_is_subscriber = praw.user_is_subscriber
+
 
 class Post(b.Readable):
 
