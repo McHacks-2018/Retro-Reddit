@@ -14,7 +14,6 @@ class Comment(b.Readable):
         """
         Take in model praw comment
         """
-        print("Bind Comment")
         self.praw = praw
         self.id = praw.id
         self.content = praw.body
@@ -88,7 +87,6 @@ class Subreddit(b.Readable, model.Section):
 class Post(b.Readable, model.Section):
 
     def __init__(self, praw):
-        print("Bind post")
         self.praw = praw
         self.id = praw.id
         self.title = praw.title
@@ -110,18 +108,17 @@ class Post(b.Readable, model.Section):
         except AttributeError:
             self.op = None
 
-
-def get_comments(self, sort="best", count=20):
-    if self._comments is None:
-        self.praw.comment_sort = sort
-        self.praw.comments.replace_more(limit=None)
-        self._comments = list(map(lambda x: Comment(x), self.praw.comments))
-    return self._comments
-
-
-def get_display_text(self):
-    return self.title
+    def get_comments(self, sort="best", count=20):
+        if self._comments is None:
+            self.praw.comment_sort = sort
+            self.praw.comments.replace_more(limit=None)
+            self._comments = list(map(lambda x: Comment(x), self.praw.comments))
+        return self._comments
 
 
-def get_children(self):
-    return self.get_comments()
+    def get_display_text(self):
+        return self.title
+
+
+    def get_children(self):
+        return self.get_comments()
