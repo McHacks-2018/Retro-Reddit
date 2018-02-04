@@ -51,13 +51,24 @@ with Cursebox() as cb:
         """
         return fit(text, width / 3)
     
-    def split_wrap_section(text):
+    def fit_wrapped(text, size):
         """
         Break text into a list of lines to fit a section
         so the text is all displayed without ellipsis
         """
-        # TODO loop over words until section width exceeded, append words so far to returned list
-        return []
+        size = int(size)
+        if size <= 1 or len(text) <= size:
+            return [text.ljust(size)]
+        lines = []
+        buff = ""
+        # TODO as per allan, we can just repeatedly copy up to index of last whitespace within size-sized chunks
+        for word in text.split():
+            if len(buff + word) < size:
+                buff += " " + word
+            else:
+                lines.append(buff.ljust(size))
+                buff = ""
+        return lines
 
 
     def get_offset(index):
@@ -68,7 +79,8 @@ with Cursebox() as cb:
             return width
         # Custom
         if index == 1:
-            return width / 7
+            #return width / 7
+            return width - (width/7)
         if index == pane_count - 1:
             if curr_pane < pane_count - 2:
                 return width
@@ -84,8 +96,10 @@ with Cursebox() as cb:
         pane_width = get_offset(index + 1) - offset
         for item in items:
             bg = colors.blue if curr_pane == index and y == pane[index] else colors.black
-            text = fit(item.get_display_text(), pane_width)
-            cb.put(offset, y, text, fg=colors.white, bg=bg)
+            yy = y
+            for line in fit_wrapped(item.get_display_text(), pane_width):
+                cb.put(offset, yy, line, fg=colors.white, bg=bg)
+                yy += 1
             y += 1
         while y < height:
             cb.put(offset, y, fit("", pane_width), fg=colors.white, bg=colors.black)
