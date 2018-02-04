@@ -87,6 +87,7 @@ def create_reddit(refresh_token=None):
         reddit = praw.Reddit(client_id=conf.clientId,
                              client_secret=conf.clientSecret,
                              user_agent=conf.userAgent,
+                             redirect_uri='http://localhost:8080',
                              refresh_token=refresh_token)
         reddit.read_only = False
         return reddit
