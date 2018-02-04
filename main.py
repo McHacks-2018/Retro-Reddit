@@ -9,7 +9,7 @@ with Cursebox() as cb:
     width, height = cb.width, cb.height
 
     def login_screen():
-        cb.clear();
+        cb.clear()
         # todo define login form
     
     def show_subreddits(subreddits, selected):
@@ -28,7 +28,9 @@ with Cursebox() as cb:
 
 
     def show_panes():
-        show_subreddits(subreddits, )
+        show_subreddits(subreddits, selected)
+        posts = reddit.getPosts(subreddits[i].name,height)
+        show_posts(posts, selected)
 
     #TODO implement nested selectlist instead
     scroll_horiz = 0
