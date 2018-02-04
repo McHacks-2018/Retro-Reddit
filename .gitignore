@@ -1,5 +1,7 @@
 # RetroReddit
 conf.py
+test.py
+retro_reddit.txt
 
 .idea/
 
@@ -90,6 +92,7 @@ celerybeat-schedule
 # virtualenv
 .venv
 venv/
+praw/
 ENV/
 
 #ignore virtualenv

@@ -1,10 +1,7 @@
 import logging
-from pprint import pprint
 
-import praw
-
-import conf
-import models
+import reddit_models as m
+import reddit_creator
 
 handler = logging.StreamHandler()
 handler.setLevel(logging.DEBUG)
@@ -12,47 +9,53 @@ logger = logging.getLogger('retroreddit')
 logger.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
-rr = praw.Reddit(client_id=conf.clientId,
-                 client_secret=conf.clientSecret,
-                 user_agent=conf.userAgent)
+rr = reddit_creator.init_reddit()
+
+try:
+    rr.user.me()
+except:
+    rr = reddit_creator.login(rr, None)
 
 
-def login(username, password):
-    global rr
-    logger.debug("Logging in as {}".format(username))
-    rr = praw.Reddit(client_id=conf.clientId,
-                     client_secret=conf.clientSecret,
-                     user_agent=conf.userAgent,
-                     username=username,
-                     password=password)
+def save(id):
+    submission = rr.submission(id=id)
+    submission.save()
 
-def getPosts(subreddit, limit=20):
+
+def unsave(id):
+    submission = rr.submission(id=id)
+    submission.unsave()
+
+
+def upvote(id):
+    submission = rr.submission(id=id)
+    submission.upvote()
+
+
+def downvote(id):
+    submission = rr.submission(id=id)
+    submission.downvote()
+
+
+def clear_vote(id):
+    submission = rr.submission(id=id)
+    submission.clear_vote()
+
+
+def get_posts(subreddit, limit=20):
     submissions = rr.subreddit(subreddit).hot(limit=limit)
-    data = map((lambda x: models.Post(x)), submissions)
+    data = map((lambda x: m.Post(x)), submissions)
     return list(data)
 
-def getUser(user):
-    return models.User(rr.redditor(user))
 
-submission = getPosts("askreddit", 10)[0]
-origSubmission = list(rr.subreddit("askreddit").hot(limit=2))[1]
-
-def testSubmission():
-    submission.pprint()
-# print(str(submission.getComments()))
-
-testSubmission()
-
-submission.op.pprint()
-
-comments = submission.getComments()
+def get_user(user):
+    return m.User(rr.redditor(user))
 
 
-def testComments():
-    for c in comments:
-        c.pprint()
-    print(len(comments))
-    children = comments[0].children()
-    print("\n\n\n\n")
-    for c in children:
-        c.pprint()
+def get_subscribed_subreddits():
+    return list(map(lambda x: m.Subreddit(x), rr.user.subreddits()))
+
+
+# todo
+def search_subreddits(query):
+    return m.Subreddit(rr.subreddit(query))
