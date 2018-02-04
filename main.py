@@ -10,7 +10,7 @@ with Cursebox() as cb:
 
     def display_message(msg):
         cb.clear()
-        cb.put(width / 2 - 5, height / 2, msg, colors.white, colors.black)
+        cb.put(width / 2 - len(msg) / 2, height / 2, msg, colors.white, colors.black)
         cb.refresh()
 
 
@@ -41,7 +41,7 @@ with Cursebox() as cb:
         """
         size = int(size)
         if size <= 1 or len(text) <= size:
-            return text
+            return text.ljust(size)
         return text[:size - 1] + "\u2026"
 
 
@@ -50,6 +50,25 @@ with Cursebox() as cb:
         Crop the text to match a third of the screen
         """
         return fit(text, width / 3)
+    
+    def fit_wrapped(text, size):
+        """
+        Break text into a list of lines to fit a section
+        so the text is all displayed without ellipsis
+        """
+        size = int(size)
+        if size <= 1 or len(text) <= size:
+            return [text.ljust(size)]
+        lines = []
+        buff = ""
+        # TODO as per allan, we can just repeatedly copy up to index of last whitespace within size-sized chunks
+        for word in text.split():
+            if len(buff + word) < size:
+                buff += " " + word
+            else:
+                lines.append(buff.ljust(size))
+                buff = ""
+        return lines
 
 
     def get_offset(index):
@@ -60,7 +79,8 @@ with Cursebox() as cb:
             return width
         # Custom
         if index == 1:
-            return width / 7
+            #return width / 7
+            return width - (width/7)
         if index == pane_count - 1:
             if curr_pane < pane_count - 2:
                 return width
@@ -80,8 +100,13 @@ with Cursebox() as cb:
         pane_width = get_offset(index + 1) - offset
         for item in items:
             bg = colors.blue if curr_pane == index and y == pane[index] else colors.black
-            text = fit(item.get_display_text(), pane_width)
-            cb.put(offset, y, text, fg=colors.white, bg=bg)
+            yy = y
+            for line in fit_wrapped(item.get_display_text(), pane_width):
+                cb.put(offset, yy, line, fg=colors.white, bg=bg)
+                yy += 1
+            y += 1
+        while y < height:
+            cb.put(offset, y, fit("", pane_width), fg=colors.white, bg=colors.black)
             y += 1
 
 
