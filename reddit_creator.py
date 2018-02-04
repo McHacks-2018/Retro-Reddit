@@ -89,12 +89,14 @@ def create_reddit(refresh_token=None):
                              user_agent=conf.userAgent,
                              redirect_uri='http://localhost:8080',
                              refresh_token=refresh_token)
+        reddit.config.decode_html_entities = False
         reddit.read_only = False
         return reddit
     reddit = praw.Reddit(client_id=conf.clientId,
                          client_secret=conf.clientSecret,
                          redirect_uri='http://localhost:8080',
                          user_agent=conf.userAgent)
+    reddit.config.decode_html_entities = False
     return reddit
 
 

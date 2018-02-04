@@ -2,6 +2,7 @@ import reddit
 import music as ms
 from cursebox import *
 from cursebox.constants import *
+from cursesection import Cursesection
 
 # TODO display ssl status
 
@@ -14,6 +15,8 @@ with Cursebox() as cb:
     curr_pane = 0
     pane_count = 3
     sections = [[]] * (pane_count - 1)
+
+    sections[0] = list(map(lambda x: Cursesection(x), reddit.get_subscribed_subreddits()))
 
     if len(sections[0]) > 0:
         pane[0] = 0
@@ -42,7 +45,7 @@ with Cursebox() as cb:
         """
         Crop the text to match a third of the screen
         """
-        return fit(text, width / 3)
+        return utils.fit(text, width / 3)
 
     def get_offset(index):
         # Safety
@@ -53,14 +56,13 @@ with Cursebox() as cb:
         # Custom
         if index == 1:
             return width / 7
+            # return width - (width / 7)
         if index == pane_count - 1:
             if curr_pane < pane_count - 2:
                 return width
-        return width / pane_count * index
+        return width / 2
 
     def update_pane(index):
-        y = 0
-        items = sections[index]
         offset = get_offset(index)
         if offset >= width:
             return
@@ -75,7 +77,11 @@ with Cursebox() as cb:
         offset = get_offset(pane_count - 1)
         if offset >= width:
             return
-        cb.put(offset, 0, content, colors.white, colors.black)
+        items = sections[index]
+        pane_width = get_offset(index + 1) - offset
+        for i, item in enumerate(items):
+            selected = curr_pane == index and i == pane[index]
+            item.draw(cb, i, offset, pane_width, selected, None if i == 0 else items[i - 1])
 
     def show_panes():
         update_pane(0)
@@ -83,10 +89,7 @@ with Cursebox() as cb:
             if pane_snapshot[i] != pane[i]:
                 sections[i + 1] = sections[i][pane[i]].get_children()
             update_pane(i + 1)
-        if pane_snapshot[pane_count - 1] != pane[pane_count - 1]:
-            global content
-            content = "index " + str(pane[1])
-        show_content()
+        update_pane(pane_count - 1)
 
     #MAIN FUNCTION
     ms.loadMPD()
@@ -106,9 +109,9 @@ with Cursebox() as cb:
         if event == EVENT_ESC:
             ms.terminateMusic()
             exit(0)
-        elif event == EVENT_UP and pane[curr_pane] > 0:
+        elif event == EVENT_UP and curr_pane != pane_count - 1 and pane[curr_pane] > 0:
             pane[curr_pane] -= 1
-        elif event == EVENT_DOWN and pane[curr_pane] < len(sections[curr_pane]) - 1:
+        elif event == EVENT_DOWN and curr_pane != pane_count - 1 and pane[curr_pane] < len(sections[curr_pane]) - 1:
             pane[curr_pane] += 1
         elif event == EVENT_RIGHT and curr_pane < pane_count - 1:
             curr_pane += 1
