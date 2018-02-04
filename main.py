@@ -68,11 +68,15 @@ with Cursebox() as cb:
 
 
     def update_pane(index):
-        y = 0
-        items = sections[index]
         offset = get_offset(index)
         if offset >= width:
             return
+        if index == pane_count - 1:
+            post = sections[index - 1][pane[index - 1]]
+            cb.put(offset, 0, post.get_content(), colors.white, colors.black)
+            return
+        y = 0
+        items = sections[index]
         pane_width = get_offset(index + 1) - offset
         for item in items:
             bg = colors.blue if curr_pane == index and y == pane[index] else colors.black
@@ -81,23 +85,13 @@ with Cursebox() as cb:
             y += 1
 
 
-    def show_content():
-        offset = get_offset(pane_count - 1)
-        if offset >= width:
-            return
-        cb.put(offset, 0, content, colors.white, colors.black)
-
-
     def show_panes():
         update_pane(0)
         for i in range(0, pane_count - 2):
             if pane_snapshot[i] != pane[i]:
                 sections[i + 1] = sections[i][pane[i]].get_children()
             update_pane(i + 1)
-        if pane_snapshot[pane_count - 1] != pane[pane_count - 1]:
-            global content
-            content = "index " + str(pane[1])
-        show_content()
+        update_pane(pane_count - 1)
 
 
     while True:
@@ -112,9 +106,9 @@ with Cursebox() as cb:
         event = cb.poll_event()
         if event == EVENT_ESC:
             exit(0)
-        elif event == EVENT_UP and pane[curr_pane] > 0:
+        elif event == EVENT_UP and curr_pane != pane_count - 1 and pane[curr_pane] > 0:
             pane[curr_pane] -= 1
-        elif event == EVENT_DOWN and pane[curr_pane] < len(sections[curr_pane]) - 1:
+        elif event == EVENT_DOWN and curr_pane != pane_count - 1 and pane[curr_pane] < len(sections[curr_pane]) - 1:
             pane[curr_pane] += 1
         elif event == EVENT_RIGHT and curr_pane < pane_count - 1:
             curr_pane += 1
