@@ -1,9 +1,9 @@
 import logging
-
 import praw
-
+import prawcore
 import conf
 import models
+from pprint import  pprint
 
 handler = logging.StreamHandler()
 handler.setLevel(logging.DEBUG)
@@ -16,7 +16,7 @@ def createReddit(username=None, password=None):
     if username is not None and password is not None:
         logger.debug("Logging in as {}".format(username))
         reddit = praw.Reddit(client_id=conf.clientId, client_secret=conf.clientSecret, user_agent=conf.userAgent,
-                             refresh_token="NBkuAEDOCCF18-4Y7cef_7_xfc")
+                             refresh_token='7XRjoV1GExeA2HJZOxWVGGLkPG0')
         return reddit
 
     reddit = praw.Reddit(client_id=conf.clientId, client_secret=conf.clientSecret, user_agent=conf.userAgent)
@@ -24,15 +24,23 @@ def createReddit(username=None, password=None):
 
 
 rr = createReddit()
+#print(rr.user.me())
 
+def save(id):
+    submission = rr.submission(id=id)
+    submission.models.save()
 
-def upvote(post):
-    post.models.upvote()
+def unsave(id):
+    submission = rr.submission(id=id)
+    submission.models.unsave()
 
+def upvote(id):
+    submission = rr.submission(id=id)
+    submission.models.upvote()
 
-def downvote(post):
-    post.models.downvote()
-
+def downvote(id):
+    submission = rr.submission(id=id)
+    submission.models.downvote()
 
 def login(username, password):
     global rr
@@ -49,6 +57,16 @@ def getUser(user):
     return models.User(rr.redditor(user))
 
 
+def searchSubreddits(query):
+    return models.Subreddit(rr.subreddit(query))
+
+# reddit_list = searchSubreddits("askreddit")
+# reddit_list.pprint()
+subreddit = rr.subreddit('askreddit')
+#pprint(vars(subreddit))
+reddit_list = searchSubreddits("askreddit")
+print(reddit_list)
+
 submission = getPosts("askreddit", 10)[0]
 origSubmission = list(rr.subreddit("askreddit").hot(limit=2))[1]
 
@@ -59,7 +77,7 @@ def testSubmission():
 
 # print(str(submission.getComments()))
 
-testSubmission()
+#testSubmission()
 
 submission.op.pprint()
 
@@ -74,3 +92,7 @@ def testComments():
     print("\n\n\n\n")
     for c in children:
         c.pprint()
+
+
+
+

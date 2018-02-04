@@ -38,6 +38,12 @@ class User(b.Readable):
         self.link_karma = praw.link_karma
         self.comment_karma = praw.comment_karma
 
+class Subreddit(b.Readable):
+
+    def __init__(self, praw):
+        self.name = praw.name
+        self.display_name = praw.display_name
+
 class Post(b.Readable):
 
     def __init__(self, praw):
