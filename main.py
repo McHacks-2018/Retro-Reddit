@@ -1,5 +1,5 @@
 import reddit
-import utils
+import music as ms
 from cursebox import *
 from cursebox.constants import *
 from cursesection import Cursesection
@@ -7,17 +7,9 @@ from cursesection import Cursesection
 # TODO display ssl status
 
 with Cursebox() as cb:
+    #VARIABLES 
+    pause = True
     width, height = int(cb.width), int(cb.height)
-
-
-    def display_message(msg):
-        cb.clear()
-        cb.put(width / 2 - len(msg) / 2, height / 2, msg, colors.white, colors.black)
-        cb.refresh()
-
-
-    display_message("loading...")
-
     pane = [-1, -1, -1]
     pane_snapshot = [-1, -1, -1]
     curr_pane = 0
@@ -28,21 +20,32 @@ with Cursebox() as cb:
 
     if len(sections[0]) > 0:
         pane[0] = 0
-
     content = "hello"
 
+    #DECLARATIONS
+    def display_message(msg):
+        cb.clear()
+        cb.put(width / 2 - 5, height / 2, msg, colors.white, colors.black)
+        cb.refresh()
 
     def login_screen():
         cb.clear()
         # todo define login form
 
+    def fit(text, size):
+        """
+        Fit the text to the given size
+        """
+        size = int(size)
+        if size <= 1 or len(text) <= size:
+            return text
+        return text[:size - 1] + "\u2026"
 
     def fit_section(text):
         """
         Crop the text to match a third of the screen
         """
         return utils.fit(text, width / 3)
-
 
     def get_offset(index):
         # Safety
@@ -59,23 +62,26 @@ with Cursebox() as cb:
                 return width
         return width / 2
 
-
     def update_pane(index):
         offset = get_offset(index)
         if offset >= width:
             return
-        if index == pane_count - 1:
-            post = sections[index - 1][pane[index - 1]].section
-            pane_width = width - offset
-            for y, line in enumerate(utils.fit_wrapped(post.get_content(), pane_width)):
-                cb.put(offset, y, line, colors.white, colors.black)
+        pane_width = get_offset(index + 1) - offset
+        for item in items:
+            bg = colors.blue if curr_pane == index and y == pane[index] else colors.black
+            text = fit(item.get_display_text(), pane_width)
+            cb.put(offset, y, text, fg=colors.white, bg=bg)
+            y += 1
+
+    def show_content():
+        offset = get_offset(pane_count - 1)
+        if offset >= width:
             return
         items = sections[index]
         pane_width = get_offset(index + 1) - offset
         for i, item in enumerate(items):
             selected = curr_pane == index and i == pane[index]
             item.draw(cb, i, offset, pane_width, selected, None if i == 0 else items[i - 1])
-
 
     def show_panes():
         update_pane(0)
@@ -85,7 +91,11 @@ with Cursebox() as cb:
             update_pane(i + 1)
         update_pane(pane_count - 1)
 
-
+    #MAIN FUNCTION
+    ms.loadMPD()
+    ms.setMusic()
+    display_message("loading.")
+    sections[0] = reddit.get_subscribed_subreddits()
     while True:
         cb.clear()
         show_panes()
@@ -97,6 +107,7 @@ with Cursebox() as cb:
 
         event = cb.poll_event()
         if event == EVENT_ESC:
+            ms.terminateMusic()
             exit(0)
         elif event == EVENT_UP and curr_pane != pane_count - 1 and pane[curr_pane] > 0:
             pane[curr_pane] -= 1
@@ -111,6 +122,14 @@ with Cursebox() as cb:
             curr_pane -= 1
         elif event == 'r':
             pass
+        elif event == 'p':
+            ms.pauseMusic(pause)
+            pause = (not pause)
+        elif event == '[':
+            ms.prevSong()
+        elif event == ']':
+            ms.nextSong()
         elif event == 'q':
+            ms.terminateMusic()
             exit(0)
             # refresh_content()
