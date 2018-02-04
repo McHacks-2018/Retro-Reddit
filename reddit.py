@@ -4,6 +4,7 @@ import prawcore
 import conf
 import models
 import reddit_login
+import pprint
 
 handler = logging.StreamHandler()
 handler.setLevel(logging.DEBUG)
@@ -24,6 +25,7 @@ def createReddit(username=None, password=None):
 
 
 rr = createReddit()
+
 #print(rr.user.me())
 
 def save(id):
@@ -34,9 +36,11 @@ def unsave(id):
     submission = rr.submission(id=id)
     submission.models.unsave()
 
+
 def upvote(id):
+    print(id)
     submission = rr.submission(id=id)
-    submission.models.upvote()
+    submission.upvote()
 
 def createReddit(refresh_token=None):
     if isinstance(refresh_token, str) and refresh_token:
@@ -101,6 +105,8 @@ def getPosts(subreddit, limit=20):
 def getUser(user):
     return models.User(rr.redditor(user))
 
+post = getPosts("askreddit", 1)[0]
+upvote(post.id)
 
 def searchSubreddits(query):
     return models.Subreddit(rr.subreddit(query))
