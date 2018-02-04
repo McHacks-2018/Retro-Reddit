@@ -13,11 +13,12 @@ def fit_wrapped(text, size):
     Break text into a list of lines to fit a section
     so the text is all displayed without ellipsis
     """
+    text = text.replace("\t", "    ")
     size = int(size)
     if size <= 1 or len(text) <= size:
         return [text.ljust(size)]
     lines = []
-    while len(text) > size:
+    while len(text) > size or "\n" in text:
         line = text[:size]
         new_line = line.find("\n")
         if new_line != -1:

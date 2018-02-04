@@ -1,9 +1,11 @@
 import reddit
 import utils
 
-posts = reddit.get_posts("askreddit", 5)
+# posts = reddit.get_posts("askreddit", 5)
+#
+# for line in utils.fit_wrapped(posts[0].get_content(), 30):
+#     print("''" + line + "'''")
 
-# print(posts[0].get_content())
+test = "asdf\n\nbasdfs"
 
-for line in utils.fit_wrapped(posts[0].get_content(), 30):
-    print("''" + line + "'''")
+print(utils.fit_wrapped(test, 10))
