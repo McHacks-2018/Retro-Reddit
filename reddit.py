@@ -19,6 +19,7 @@ def createReddit(refresh_token=None):
                              client_secret=conf.clientSecret,
                              user_agent=conf.userAgent,
                              refresh_token=refresh_token)
+        reddit.read_only = False
         return reddit
     reddit = praw.Reddit(client_id=conf.clientId,
                          client_secret=conf.clientSecret,
@@ -28,8 +29,9 @@ def createReddit(refresh_token=None):
 
 
 def initReddit():
-    with open("retro_reddit.txt", "w+") as token_file:
+    with open("retro_reddit.txt", "r+") as token_file:
         token = token_file.readline()
+        logger.debug("Init with token {}".format(token))
         if token:
             return createReddit(token)
     return createReddit()
