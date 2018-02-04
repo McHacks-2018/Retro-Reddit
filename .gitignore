@@ -1,3 +1,8 @@
+# RetroReddit
+conf.py
+
+.idea/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -86,6 +91,10 @@ celerybeat-schedule
 .venv
 venv/
 ENV/
+
+#ignore virtualenv
+Retro-Reddit/
+Retro-Reddit-venv/
 
 # Spyder project settings
 .spyderproject
