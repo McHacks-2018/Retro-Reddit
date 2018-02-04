@@ -36,6 +36,7 @@ with Cursebox() as cb:
 
 
 
+
     def show_panes():
         show_subreddits()
         if curr_pane == 0: #and index_changed:
@@ -61,6 +62,8 @@ with Cursebox() as cb:
     while True:
         cb.clear()
         show_panes()
+        # show_subreddits()
+        # show_comments()
         cb.refresh()
 
         event = cb.poll_event()
