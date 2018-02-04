@@ -14,5 +14,12 @@ def playMusic():
     sb.check_output(['mpc','-q', 'shuffle'])
     sb.check_output(['mpc','-q', 'play'])
 
-def stopMusic():
-    print (sb.check_output(['mpc', 'clear']))
+def pauseMusic(switch):
+    if(switch):
+        sb.check_output(['mpc','-q','pause'])
+    else:
+        sb.check_output(['mpc', '-q', 'play'])
+
+
+def terminateMusic():
+    (sb.check_output(['mpc', 'clear']))
