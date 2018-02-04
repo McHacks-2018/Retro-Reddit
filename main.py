@@ -1,17 +1,19 @@
 import reddit
+import music as ms
 from cursebox import *
 from cursebox.constants import *
 
 # TODO display ssl status
 
 with Cursebox() as cb:
+    pause = True
     width, height = int(cb.width), int(cb.height)
 
     def display_message(msg):
         cb.clear()
         cb.put(width / 2 - 5, height / 2, msg, colors.white, colors.black)
         cb.refresh()
-
+    ms.playMusic()
     display_message("loading.")
 
     pane = [0, -1, -1]
@@ -97,6 +99,7 @@ with Cursebox() as cb:
 
         event = cb.poll_event()
         if event == EVENT_ESC:
+            ms.terminateMusic()
             exit(0)
         elif event == EVENT_UP and pane[curr_pane] > 0:
             pane[curr_pane] -= 1
@@ -111,6 +114,13 @@ with Cursebox() as cb:
             curr_pane -= 1
         elif event == 'r':
             pass
+        elif event == 'p':
+            ms.pauseMusic(pause)
+            pause = !(pause)
+        elif event == '[':
+            ms.prevSong()
+        elif event == ']':
+            ms.nextSong()
         elif event == 'q':
             exit(0)
             # refresh_content()
