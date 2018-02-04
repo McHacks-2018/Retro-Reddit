@@ -1,7 +1,8 @@
 import reddit
+import utils
 from cursebox import *
 from cursebox.constants import *
-import utils
+from cursesection import Cursesection
 
 # TODO display ssl status
 
@@ -23,7 +24,7 @@ with Cursebox() as cb:
     pane_count = 3
     sections = [[]] * (pane_count - 1)
 
-    sections[0] = reddit.get_subscribed_subreddits()
+    sections[0] = list(map(lambda x: Cursesection(x), reddit.get_subscribed_subreddits()))
 
     if len(sections[0]) > 0:
         pane[0] = 0
@@ -34,6 +35,7 @@ with Cursebox() as cb:
     def login_screen():
         cb.clear()
         # todo define login form
+
 
     def fit_section(text):
         """
@@ -55,7 +57,7 @@ with Cursebox() as cb:
         if index == pane_count - 1:
             if curr_pane < pane_count - 2:
                 return width
-        return width / pane_count * index
+        return width / 2
 
 
     def update_pane(index):
@@ -63,26 +65,16 @@ with Cursebox() as cb:
         if offset >= width:
             return
         if index == pane_count - 1:
-            post = sections[index - 1][pane[index - 1]]
-            y = 0
+            post = sections[index - 1][pane[index - 1]].section
             pane_width = width - offset
-            for line in utils.fit_wrapped(post.get_content(), pane_width):
+            for y, line in enumerate(utils.fit_wrapped(post.get_content(), pane_width)):
                 cb.put(offset, y, line, colors.white, colors.black)
-                y += 1
             return
-        y = 0
         items = sections[index]
         pane_width = get_offset(index + 1) - offset
-        for item in items:
-            bg = colors.blue if curr_pane == index and y == pane[index] else colors.black
-            yy = y
-            for line in utils.fit_wrapped(item.get_display_text(), pane_width):
-                cb.put(offset, yy, line, fg=colors.white, bg=bg)
-                yy += 1
-            y += 1
-        while y < height:
-            cb.put(offset, y, utils.fit("", pane_width), fg=colors.white, bg=colors.black)
-            y += 1
+        for i, item in enumerate(items):
+            selected = curr_pane == index and i == pane[index]
+            item.draw(cb, i, offset, pane_width, selected, None if i == 0 else items[i - 1])
 
 
     def show_panes():
