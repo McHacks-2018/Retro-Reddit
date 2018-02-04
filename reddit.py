@@ -3,8 +3,9 @@ import praw
 import prawcore
 import conf
 import models
-import reddit_login
 import pprint
+import reddit_creator
+
 
 handler = logging.StreamHandler()
 handler.setLevel(logging.DEBUG)
@@ -13,34 +14,28 @@ logger.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
 
-def createReddit(username=None, password=None):
-    if username is not None and password is not None:
-        logger.debug("Logging in as {}".format(username))
-        reddit = praw.Reddit(client_id=conf.clientId, client_secret=conf.clientSecret, user_agent=conf.userAgent,
-                             refresh_token='7XRjoV1GExeA2HJZOxWVGGLkPG0')
-        return reddit
-
-    reddit = praw.Reddit(client_id=conf.clientId, client_secret=conf.clientSecret, user_agent=conf.userAgent)
-    return reddit
-
-
-rr = createReddit()
 
 #print(rr.user.me())
 
 def save(id):
     submission = rr.submission(id=id)
-    submission.models.save()
+    submission.save()
 
 def unsave(id):
     submission = rr.submission(id=id)
-    submission.models.unsave()
-
+    submission.unsave()
 
 def upvote(id):
-    print(id)
     submission = rr.submission(id=id)
     submission.upvote()
+
+def downvote(id):
+    submission = rr.submission(id=id)
+    submission.downvote()
+
+def clear_vote(id):
+    submission = rr.submission(id=id)
+    submission.clear_vote()
 
 def createReddit(refresh_token=None):
     if isinstance(refresh_token, str) and refresh_token:
@@ -56,6 +51,7 @@ def createReddit(refresh_token=None):
                          user_agent=conf.userAgent)
     return reddit
 
+rr = createReddit()
 
 def initReddit():
     with open("retro_reddit.txt", "r+") as token_file:
@@ -65,9 +61,6 @@ def initReddit():
             return createReddit(token)
     return createReddit()
 
-def downvote(id):
-    submission = rr.submission(id=id)
-    submission.models.downvote()
 
 rr = initReddit()
 
@@ -90,10 +83,12 @@ def login(refresh_token=None):
             rr = createReddit(token)
 
 
+rr = reddit_creator.initReddit()
+
 try:
     rr.user.me()
 except:
-    login(None)
+    rr = reddit_creator.login(rr, None)
 
 
 def getPosts(subreddit, limit=20):
@@ -106,7 +101,7 @@ def getUser(user):
     return models.User(rr.redditor(user))
 
 post = getPosts("askreddit", 1)[0]
-upvote(post.id)
+clear_vote(post.id)
 
 def searchSubreddits(query):
     return models.Subreddit(rr.subreddit(query))
