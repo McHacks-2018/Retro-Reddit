@@ -6,37 +6,28 @@ from cursebox.constants import *
 # TODO display ssl status
 
 with Cursebox() as cb:
+    #VARIABLES 
     pause = True
     width, height = int(cb.width), int(cb.height)
-
-
-    def display_message(msg):
-        cb.clear()
-        cb.put(width / 2 - 5, height / 2, msg, colors.white, colors.black)
-        cb.refresh()
-    
-    ms.loadMPD()
-    ms.setMusic()
-    display_message("loading.")
-
     pane = [-1, -1, -1]
     pane_snapshot = [-1, -1, -1]
     curr_pane = 0
     pane_count = 3
     sections = [[]] * (pane_count - 1)
 
-    sections[0] = reddit.get_subscribed_subreddits()
-
     if len(sections[0]) > 0:
         pane[0] = 0
-
     content = "hello"
 
+    #DECLARATIONS
+    def display_message(msg):
+        cb.clear()
+        cb.put(width / 2 - 5, height / 2, msg, colors.white, colors.black)
+        cb.refresh()
 
     def login_screen():
         cb.clear()
         # todo define login form
-
 
     def fit(text, size):
         """
@@ -47,13 +38,11 @@ with Cursebox() as cb:
             return text
         return text[:size - 1] + "\u2026"
 
-
     def fit_section(text):
         """
         Crop the text to match a third of the screen
         """
         return fit(text, width / 3)
-
 
     def get_offset(index):
         # Safety
@@ -69,7 +58,6 @@ with Cursebox() as cb:
                 return width
         return width / pane_count * index
 
-
     def update_pane(index):
         y = 0
         items = sections[index]
@@ -83,13 +71,11 @@ with Cursebox() as cb:
             cb.put(offset, y, text, fg=colors.white, bg=bg)
             y += 1
 
-
     def show_content():
         offset = get_offset(pane_count - 1)
         if offset >= width:
             return
         cb.put(offset, 0, content, colors.white, colors.black)
-
 
     def show_panes():
         update_pane(0)
@@ -102,7 +88,11 @@ with Cursebox() as cb:
             content = "index " + str(pane[1])
         show_content()
 
-
+    #MAIN FUNCTION
+    ms.loadMPD()
+    ms.setMusic()
+    display_message("loading.")
+    sections[0] = reddit.get_subscribed_subreddits()
     while True:
         cb.clear()
         show_panes()
@@ -137,5 +127,6 @@ with Cursebox() as cb:
         elif event == ']':
             ms.nextSong()
         elif event == 'q':
+            ms.terminateMusic()
             exit(0)
             # refresh_content()
