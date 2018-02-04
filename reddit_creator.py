@@ -100,11 +100,14 @@ def create_reddit(refresh_token=None):
 
 
 def init_reddit():
-    with open("retro_reddit.txt", "r+") as token_file:
-        token = token_file.readline()
-        logger.debug("Init with token {}".format(token))
-        if token:
-            return create_reddit(token)
+    try:
+        with open("retro_reddit.txt", "r+") as token_file:
+            token = token_file.readline()
+            logger.debug("Init with token {}".format(token))
+            if token:
+                return create_reddit(token)
+    except FileNotFoundError:
+        pass
     return create_reddit()
 
 
