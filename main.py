@@ -7,16 +7,25 @@ from cursebox.constants import *
 with Cursebox() as cb:
     width, height = int(cb.width), int(cb.height)
 
-    cb.clear()
-    cb.put(width / 2 - 5, height / 2, "loading...", colors.white, colors.black)
-    cb.refresh()
+    def display_message(msg):
+        cb.clear()
+        cb.put(width / 2 - 5, height / 2, msg, colors.white, colors.black)
+        cb.refresh()
+
+    display_message("loading.")
 
     scroll_vert = [0, 0, 0]
     curr_pane = 0
 
     subreddits = reddit.get_subscribed_subreddits()
+
+    display_message("loading..")
+
     posts = subreddits[0].get_posts(height)
-    content = None
+
+    display_message("loading...")
+
+    content = "hello"
 
 
     def login_screen():
@@ -25,6 +34,9 @@ with Cursebox() as cb:
 
 
     def fit(text, size):
+        """
+        Fit the text to the given size
+        """
         size = int(size)
         if size <= 1 or len(text) <= size:
             return text
@@ -32,6 +44,9 @@ with Cursebox() as cb:
 
 
     def fit_section(text):
+        """
+        Crop the text to match a third of the screen
+        """
         return fit(text, width / 3)
 
 
