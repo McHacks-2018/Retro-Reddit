@@ -50,8 +50,6 @@ class Me(b.Readable):
 class Subreddit(b.Readable):
 
     def __init__(self, praw):
-        self.name = praw.name
-        self.display_name = praw.display_name
         self.banner_size = praw.banner_size
         self.banner_img = praw.banner_img
         self.description = praw.public_description
@@ -61,7 +59,8 @@ class Subreddit(b.Readable):
         self.lang = praw.lang
         self.submission_type = praw.submission_type
         self.subscribers = praw.subscribers
-        self.title = praw.header_title
+        self.subreddit_name = praw.display_name
+        self.title = praw.title
         self.url = praw.url
         self.user_is_subscriber = praw.user_is_subscriber
 
