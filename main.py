@@ -116,7 +116,7 @@ with Cursebox() as cb:
             pass
         elif event == 'p':
             ms.pauseMusic(pause)
-            pause = !(pause)
+            pause = (not pause)
         elif event == '[':
             ms.prevSong()
         elif event == ']':

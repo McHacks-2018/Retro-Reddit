@@ -22,7 +22,7 @@ def pauseMusic(switch):
 
 def nextSong():
     sb.check_output(['mpc', '-q', 'next'])
-    
+
 def prevSong():
     sb.check_output(['mpc', '-q', 'prev'])
 
