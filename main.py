@@ -1,6 +1,7 @@
 import reddit
 from cursebox import *
 from cursebox.constants import *
+import utils
 
 # TODO display ssl status
 
@@ -34,41 +35,11 @@ with Cursebox() as cb:
         cb.clear()
         # todo define login form
 
-
-    def fit(text, size):
-        """
-        Fit the text to the given size
-        """
-        size = int(size)
-        if size <= 1 or len(text) <= size:
-            return text.ljust(size)
-        return text[:size - 1] + "\u2026"
-
-
     def fit_section(text):
         """
         Crop the text to match a third of the screen
         """
-        return fit(text, width / 3)
-    
-    def fit_wrapped(text, size):
-        """
-        Break text into a list of lines to fit a section
-        so the text is all displayed without ellipsis
-        """
-        size = int(size)
-        if size <= 1 or len(text) <= size:
-            return [text.ljust(size)]
-        lines = []
-        buff = ""
-        # TODO as per allan, we can just repeatedly copy up to index of last whitespace within size-sized chunks
-        for word in text.split():
-            if len(buff + word) < size:
-                buff += " " + word
-            else:
-                lines.append(buff.ljust(size))
-                buff = ""
-        return lines
+        return utils.fit(text, width / 3)
 
 
     def get_offset(index):
@@ -79,8 +50,8 @@ with Cursebox() as cb:
             return width
         # Custom
         if index == 1:
-            #return width / 7
-            return width - (width/7)
+            return width / 7
+            # return width - (width / 7)
         if index == pane_count - 1:
             if curr_pane < pane_count - 2:
                 return width
@@ -93,7 +64,11 @@ with Cursebox() as cb:
             return
         if index == pane_count - 1:
             post = sections[index - 1][pane[index - 1]]
-            cb.put(offset, 0, post.get_content(), colors.white, colors.black)
+            y = 0
+            pane_width = width - offset
+            for line in utils.fit_wrapped(post.get_content(), pane_width):
+                cb.put(offset, y, line, colors.white, colors.black)
+                y += 1
             return
         y = 0
         items = sections[index]
@@ -101,12 +76,12 @@ with Cursebox() as cb:
         for item in items:
             bg = colors.blue if curr_pane == index and y == pane[index] else colors.black
             yy = y
-            for line in fit_wrapped(item.get_display_text(), pane_width):
+            for line in utils.fit_wrapped(item.get_display_text(), pane_width):
                 cb.put(offset, yy, line, fg=colors.white, bg=bg)
                 yy += 1
             y += 1
         while y < height:
-            cb.put(offset, y, fit("", pane_width), fg=colors.white, bg=colors.black)
+            cb.put(offset, y, utils.fit("", pane_width), fg=colors.white, bg=colors.black)
             y += 1
 
 

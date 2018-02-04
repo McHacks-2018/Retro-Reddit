@@ -1,11 +1,9 @@
 import reddit
+import utils
 
-subreddits = reddit.get_subscribed_subreddits()
-print("got subreddits")
-post = subreddits[0].get_posts(10)
-print("got posts")
+posts = reddit.get_posts("askreddit", 5)
 
-comments = post[0].get_comments()
-print("got comments")
+# print(posts[0].get_content())
 
-print(len(comments))
+for line in utils.fit_wrapped(posts[0].get_content(), 30):
+    print("''" + line + "'''")
