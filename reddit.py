@@ -16,20 +16,22 @@ def createReddit(username=None, password=None):
     if username is not None and password is not None:
         logger.debug("Logging in as {}".format(username))
         reddit = praw.Reddit(client_id=conf.clientId,
-                           client_secret=conf.clientSecret,
-                           user_agent=conf.userAgent,
-                           username=username,
-                           password=password)
-        if reddit.read_only:
-            logger.error("Failed to log in with user")
-            return None
+                             client_secret=conf.clientSecret,
+                             user_agent=conf.userAgent,
+                             redirect_uri="https://github.com/McHacks-2018/Retro-Reddit")
+        print(reddit.auth.url(['identity'], 'init', implicit=True))
+        # if reddit.read_only:
+        #     logger.error("Failed to log in with user")
+        #     return None
+        # for c in reddit.inbox.mentions():
+        #     print(c)
+        # print(reddit.inbox.mentions())
+        reddit.user.me()
         return reddit
-    if hasattr(conf, 'testUser') and conf.testUser is not None and hasattr(conf,
-                                                                           'testPass') and conf.testPass is not None:
-        return createReddit(conf.testUser, conf.testPass)
-    return praw.Reddit(client_id=conf.clientId,
-                       client_secret=conf.clientSecret,
-                       user_agent=conf.userAgent)
+    reddit = praw.Reddit(client_id=conf.clientId,
+                         client_secret=conf.clientSecret,
+                         user_agent=conf.userAgent)
+    return reddit
 
 
 rr = createReddit()
