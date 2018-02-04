@@ -14,21 +14,18 @@ with Cursebox() as cb:
         cb.refresh()
 
 
-    display_message("loading.")
+    display_message("loading...")
 
-    pane = [0, -1, -1]
-    pane_snapshot = [0, -1, -1]
+    pane = [-1, -1, -1]
+    pane_snapshot = [-1, -1, -1]
     curr_pane = 0
     pane_count = 3
-    sections = [None] * (pane_count - 1)
+    sections = [[]] * (pane_count - 1)
 
     sections[0] = reddit.get_subscribed_subreddits()
 
-    display_message("loading..")
-
-    sections[1] = sections[0][0].get_children()
-
-    display_message("loading...")
+    if len(sections[0]) > 0:
+        pane[0] = 0
 
     content = "hello"
 
@@ -64,10 +61,17 @@ with Cursebox() as cb:
 
 
     def get_offset(index):
+        # Safety
         if index <= 0:
             return 0
         if index >= pane_count:
             return width
+        # Custom
+        if index == 1:
+            return width / 7
+        if index == pane_count - 1:
+            if curr_pane < pane_count - 2:
+                return width
         return width / pane_count * index
 
 
@@ -75,22 +79,28 @@ with Cursebox() as cb:
         y = 0
         items = sections[index]
         offset = get_offset(index)
-        width = get_offset(index + 1) - offset
+        if offset >= width:
+            return
+        pane_width = get_offset(index + 1) - offset
         for item in items:
             bg = colors.blue if curr_pane == index and y == pane[index] else colors.black
-            text = fit(item.get_display_text(), width)
+            text = fit(item.get_display_text(), pane_width)
             cb.put(offset, y, text, fg=colors.white, bg=bg)
-            y+=1
+            y += 1
+
 
     def show_content():
-        cb.put(2 * width / 3, 0, content, colors.white, colors.black)
+        offset = get_offset(pane_count - 1)
+        if offset >= width:
+            return
+        cb.put(offset, 0, content, colors.white, colors.black)
 
 
     def show_panes():
         update_pane(0)
         for i in range(0, pane_count - 2):
             if pane_snapshot[i] != pane[i]:
-                sections[i+1] = sections[i][pane[i]].get_children()
+                sections[i + 1] = sections[i][pane[i]].get_children()
             update_pane(i + 1)
         if pane_snapshot[pane_count - 1] != pane[pane_count - 1]:
             global content

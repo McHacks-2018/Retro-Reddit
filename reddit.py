@@ -9,8 +9,6 @@ logger = logging.getLogger('retroreddit')
 logger.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
-# print(rr.user.me())
-
 rr = reddit_creator.init_reddit()
 
 try:

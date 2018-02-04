@@ -48,17 +48,15 @@ def send_message(client, message):
 
 def request_login(reddit):
     """Provide the program's entry point when directly executed."""
-    commaScopes = 'all'
-
-    if commaScopes.lower() == 'all':
-        scopes = ['creddits', 'edit', 'flair', 'history', 'identity',
-                  'modconfig', 'modcontributors', 'modflair', 'modlog',
-                  'modothers', 'modposts', 'modself', 'modwiki',
-                  'mysubreddits', 'privatemessages', 'read', 'report',
-                  'save', 'submit', 'subscribe', 'vote', 'wikiedit',
-                  'wikiread']
-    else:
-        scopes = commaScopes.strip().split(',')
+    scopes = ['edit', 'history', 'identity',
+              'mysubreddits', 'privatemessages', 'read', 'report',
+              'save', 'submit', 'subscribe', 'vote']
+    # scopes = ['creddits', 'edit', 'flair', 'history', 'identity',
+    #           'modconfig', 'modcontributors', 'modflair', 'modlog',
+    #           'modothers', 'modposts', 'modself', 'modwiki',
+    #           'mysubreddits', 'privatemessages', 'read', 'report',
+    #           'save', 'submit', 'subscribe', 'vote', 'wikiedit',
+    #           'wikiread']
 
     state = str(random.randint(0, 65000))
     url = reddit.auth.url(scopes, state, 'permanent')
@@ -89,6 +87,7 @@ def create_reddit(refresh_token=None):
         reddit = praw.Reddit(client_id=conf.clientId,
                              client_secret=conf.clientSecret,
                              user_agent=conf.userAgent,
+                             redirect_uri='http://localhost:8080',
                              refresh_token=refresh_token)
         reddit.read_only = False
         return reddit
