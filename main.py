@@ -16,8 +16,8 @@ with Cursebox() as cb:
         y = 0
         for subreddit in subreddits:
             bg = colors.black if y != scroll_vert[0] else colors.blue
-            title = subreddit.name[:width/3-3] + '...' if len(post.title) > width/3 else post.title.ljust(width/3)
-            cb.put(0, y, title, fg = colors.white, bg)
+            title = subreddit.name[:width/3-3] + '...' if len(subreddit.title) > width/3 else subreddit.title.ljust(width/3)
+            cb.put(0, y, title, fg = colors.white, bg = bg)
             y += 1
 
     # def get_subreddits():
@@ -55,7 +55,7 @@ with Cursebox() as cb:
     scroll_vert = [0,0,0]
     curr_pane = 0
 
-    subreddits = reddit.getSubreddits()
+    subreddits = reddit.searchSubreddits("askreddit")
     posts = reddit.getPosts(subreddits[0].name, height)
     content = None
 
