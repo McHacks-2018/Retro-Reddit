@@ -1,6 +1,6 @@
 import logging
 
-import models
+import reddit_models as m
 import reddit_creator
 
 handler = logging.StreamHandler()
@@ -46,18 +46,18 @@ def clear_vote(id):
 
 def get_posts(subreddit, limit=20):
     submissions = rr.subreddit(subreddit).hot(limit=limit)
-    data = map((lambda x: models.Post(x)), submissions)
+    data = map((lambda x: m.Post(x)), submissions)
     return list(data)
 
 
 def get_user(user):
-    return models.User(rr.redditor(user))
+    return m.User(rr.redditor(user))
 
 
 def get_subscribed_subreddits():
-    return list(map(lambda x: models.Subreddit(x), rr.user.subreddits()))
+    return list(map(lambda x: m.Subreddit(x), rr.user.subreddits()))
 
 
 # todo
 def search_subreddits(query):
-    return models.Subreddit(rr.subreddit(query))
+    return m.Subreddit(rr.subreddit(query))

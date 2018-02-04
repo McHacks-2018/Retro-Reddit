@@ -1,5 +1,6 @@
 import bindings as b
 import reddit
+import model
 
 
 class Comment(b.Readable):
@@ -50,7 +51,7 @@ class Me(b.Readable):
         self.id = praw.id
 
 
-class Subreddit(b.Readable):
+class Subreddit(b.Readable, model.Section):
 
     def __init__(self, praw):
         self.banner_size = praw.banner_size
@@ -73,8 +74,14 @@ class Subreddit(b.Readable):
             self._posts = reddit.get_posts(self.subreddit_name, limit)
         return self._posts
 
+    def get_display_text(self):
+        return self.subreddit_name
 
-class Post(b.Readable):
+    def get_children(self):
+        return self.get_posts()
+
+
+class Post(b.Readable, model.Section):
 
     def __init__(self, praw):
         self.praw = praw
@@ -101,3 +108,11 @@ class Post(b.Readable):
             self.praw.comments.replace_more(limit=None)
             self._comments = list(map(lambda x: Comment(x), self.praw.comments))
         return self._comments
+
+    def get_display_text(self):
+        return self.title
+
+    def get_children(self):
+        return self.get_comments()
+
+
